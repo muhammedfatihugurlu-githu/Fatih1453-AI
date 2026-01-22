@@ -1,8 +1,12 @@
 import streamlit as st
 from groq import Groq
 
-# API Key'i Streamlit Secrets'tan güvenli bir şekilde alıyoruz
-client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+# API Key'i Streamlit Secrets'tan alıyoruz
+# Eğer hata alırsan Streamlit Secrets kısmına yeni bir key koymayı unutma!
+try:
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+except Exception as e:
+    st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol edin.")
 
 st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️")
 st.title("🇹🇷⚔️ Fatih1453 Yapay Zekası")
@@ -25,28 +29,29 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
 
     # Asistan cevabı
     with st.chat_message("assistant", avatar="🛡️"):
-        # API isteği
-        completion = client.chat.completions.create(
-            model="llama3-70b-8192",
-            messages=[
-                {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge bir Osmanlı padişahı gibi Türkçe konuş."},
-                *st.session_state.messages
-            ],
-            stream=True
-        )
-        
-        full_response = ""
-        placeholder = st.empty()
-        
-        # Gelen veriyi parça parça oku
-        for chunk in completion:
-            # İçerik varsa ekle (Hata almamak için None kontrolü yapıyoruz)
-            content = chunk.choices[0].delta.content
-            if content is not None:
-                full_response += content
-                placeholder.markdown(full_response + "▌")
-        
-        placeholder.markdown(full_response)
-
-    # Asistan cevabını hafızaya kaydet
-    st.session_state.messages.append({"role": "assistant", "content": full_response})
+        try:
+            # Model ismini daha stabil olanla güncelledim
+            completion = client.chat.completions.create(
+                model="llama-3.1-8b-instant", 
+                messages=[
+                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge bir Osmanlı padişahı gibi Türkçe konuş."},
+                    *st.session_state.messages
+                ],
+                stream=True
+            )
+            
+            full_response = ""
+            placeholder = st.empty()
+            
+            for chunk in completion:
+                content = chunk.choices[0].delta.content
+                if content is not None:
+                    full_response += content
+                    placeholder.markdown(full_response + "▌")
+            
+            placeholder.markdown(full_response)
+            # Cevabı hafızaya kaydet
+            st.session_state.messages.append({"role": "assistant", "content": full_response})
+            
+        except Exception as e:
+            st.error(f"Padişahım bir hata oluştu: {e}")
