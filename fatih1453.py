@@ -34,7 +34,7 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
             completion = client.chat.completions.create(
                 model="llama-3.1-8b-instant", 
                 messages=[
-                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge bir Osmanlı padişahı gibi Türkçe konuş."},
+                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Osmanlı İmparatorluğu ile alakalı bilgin sonsuz. Türkçe konuş."},
                     *st.session_state.messages
                 ],
                 stream=True
@@ -54,4 +54,4 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
         except Exception as e:
-            st.error(f"Padişahım bir hata oluştu: {e}")
+            st.error(f"Yapmaa, bir hata oluştu: {e}")
