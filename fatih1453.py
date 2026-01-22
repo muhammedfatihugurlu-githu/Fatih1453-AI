@@ -32,7 +32,7 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
         try:
             # Model ismini daha stabil olanla güncelledim
             completion = client.chat.completions.create(
-                model="llama-3.1-70b-instant", 
+                model="llama3-70b-8192", 
                 messages=[
                     {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Komik birisin. Muhammed Fatih Uğurlu, seni yapan kişi, 2026 yılında bir kodyazar, Osmanlı padişahı değil, ona saygılı ol. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
                     *st.session_state.messages
