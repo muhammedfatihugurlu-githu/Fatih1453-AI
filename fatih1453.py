@@ -28,7 +28,7 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
         st.markdown(prompt)
 
     # Asistan cevabı
-    with st.chat_message("assistant", avatar="🛡️"):
+    with st.chat_message("assistant", avatar="🤖"):
         try:
             # Model ismini daha stabil olanla güncelledim
             completion = client.chat.completions.create(
