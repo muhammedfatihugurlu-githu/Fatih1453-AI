@@ -9,7 +9,7 @@ except Exception as e:
     st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol edin.")
 
 st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️")
-st.title("🇹🇷⚔️ Fatih1453 Yapay Zekası")
+st.title("🇹🇷⚔️ Fatih1453 - v0.1")
 
 # Hafıza (Chat History) ayarları
 if "messages" not in st.session_state:
@@ -34,7 +34,7 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
             completion = client.chat.completions.create(
                 model="llama-3.1-8b-instant", 
                 messages=[
-                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Osmanlı İmparatorluğu ile alakalı bilgin sonsuz. Türkçe konuş."},
+                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Muhammed Fatih Uğurlu, seni yapan kişi, ona saygılı ol. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
                     *st.session_state.messages
                 ],
                 stream=True
