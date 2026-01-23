@@ -1,5 +1,6 @@
 import streamlit as st
 from groq import Groq
+import time
 
 # API Key'i Streamlit Secrets'tan alıyoruz
 # Eğer hata alırsan Streamlit Secrets kısmına yeni bir key koymayı unutma!
@@ -63,3 +64,28 @@ with st.sidebar:
     if st.button("➕ Yeni Sohbet", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
+
+    if st.button("💾 Sohbeti Kaydet", use_container_width=True):
+        if st.session_state.messages:
+            tarih = time.strftime("%H:%M")
+            ozet = st.session_state.messages[0]["content"][:15]
+            # Mesajları kopyalarken list() kullanmak doğru bir yaklaşım
+            st.session_state.arsiv[f"{tarih} | {ozet}"] = list(st.session_state.messages)
+            st.success("Kaydedildi abim!")  # Bu satır if bloğunun içinde olmalıydı
+
+    st.divider()
+    st.subheader("Eski Kayıtlar")
+
+    # Sözlük üzerinde işlem yaparken list(keys()) kullanmak silme işlemleri için güvenlidir
+    for isim in list(st.session_state.arsiv.keys()):
+        c1, c2 = st.columns([4, 1])
+        
+        # Sohbeti Geri Yükle
+        if c1.button(f"{isim}", key=f"load_{isim}"):
+            st.session_state.messages = st.session_state.arsiv[isim]
+            st.rerun()
+            
+        # Sohbeti Sil
+        if c2.button("🗑️", key=f"del_{isim}"):
+            del st.session_state.arsiv[isim]
+            st.rerun() # Buradaki fazla nokta temizlendi
