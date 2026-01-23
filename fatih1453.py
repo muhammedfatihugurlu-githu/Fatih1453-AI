@@ -89,3 +89,11 @@ with st.sidebar:
         if c2.button("🗑️", key=f"del_{isim}"):
             del st.session_state.arsiv[isim]
             st.rerun() # Buradaki fazla nokta temizlendi
+
+# --- HAFIZA KONTROLÜ (En üstte olmalı) ---
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+# HATA ALDIĞIN YER BURASI: Arşivi de buraya tanımlamalıyız
+if "arsiv" not in st.session_state:
+    st.session_state.arsiv = {}  # Boş bir sözlük oluşturduk
