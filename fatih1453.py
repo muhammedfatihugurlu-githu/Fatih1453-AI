@@ -9,7 +9,7 @@ try:
 except Exception as e:
     st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol edin.")
 
-st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️")
+st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️", layout="wide")
 st.title("🇹🇷⚔️ Fatih1453 - v0.2")
 
 # Hafıza (Chat History) ayarları
@@ -22,7 +22,7 @@ for message in st.session_state.messages:
         st.markdown(message["content"])
 
 # Kullanıcı girişi
-if prompt := st.chat_input("Fatih1453'e sorun..."):
+if prompt := st.chat_input("Fatih1453'e yaz..."):
     # Kullanıcı mesajını hafızaya ekle ve ekrana yaz
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
