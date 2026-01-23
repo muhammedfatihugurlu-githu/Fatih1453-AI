@@ -60,6 +60,6 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
 with st.sidebar:
     st.title("📜 Fetih Arşivi")
 
-    if st.button("➕ Yeni Sohbet"):
+    if st.button("➕ Yeni Sohbet", use_container_width=True):
         st.session_state.messages = []
         st.rerun()
