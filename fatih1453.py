@@ -58,25 +58,8 @@ if prompt := st.chat_input("Fatih1453'e sorun..."):
 
 # --- YAN MENÜ (SIDEBAR) AYARLARI ---
 with st.sidebar:
-    st.image("https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Tuira_of_Mehmed_II.svg/512px-Tuira_of_Mehmed_II.svg.png", width=100) # Fatih'in tuğrası
-    st.title("Saray Ayarları")
-    st.markdown("---") # Araya ince bir çizgi çeker
-    
-    # Yeni Sohbet Butonu
-    if st.button("Yeni Sohbet Başlat ⚔️", use_container_width=True):
-        st.session_state.messages = [] # Hafızayı siler
-        st.rerun() # Sayfayı yeniler
-    
-    st.markdown("---")
-    
-    # Bilgi Kutusu
-    st.info("""
-    **Hünkarım;**
-    Bu alandan sohbeti sıfırlayabilir, vezirlerinize (yapay zekaya) yeni bir sayfa açtırabilirsiniz.
-    """)
-    
-    # Alt Bilgi
-    st.caption("Fatih1453 v1.0 | Kodun gücü adına!")
+    st.title("📜 Fetih Arşivi")
 
-
-
+    if st.button("➕ Yeni Sohbet"):
+        st.session_state.messages = []
+        st.rerun()
