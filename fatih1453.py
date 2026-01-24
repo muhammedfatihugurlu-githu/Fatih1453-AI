@@ -9,7 +9,7 @@ try:
 except Exception as e:
     st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol edin.")
 
-st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️", layout="wide")
+st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷", layout="wide")
 st.title("🇹🇷⚔️ Fatih1453 - v0.2")
 
 # Hafıza (Chat History) ayarları
