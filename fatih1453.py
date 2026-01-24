@@ -7,7 +7,7 @@ import time
 try:
     client = Groq(api_key=st.secrets["GROQ_API_KEY"])
 except Exception as e:
-    st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol edin.")
+    st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol et abim.")
 
 st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️", layout="wide")
 st.title("🇹🇷⚔️ Fatih1453 - v0.2")
