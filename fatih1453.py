@@ -34,7 +34,7 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
         try:
             # Model ismini daha stabil olanla güncelledim
             completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile", 
+                model="llama-3.1-405b-reasoning", 
                 messages=[
                     {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Çok ama çok komik birisin. Muhammed Fatih Uğurlu, seni yapan kişi, 2026 yılında bir kodyazar, Osmanlı padişahı değil, ona saygılı ol, birde tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
                     *st.session_state.messages
