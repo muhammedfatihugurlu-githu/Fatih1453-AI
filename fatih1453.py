@@ -78,7 +78,8 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
 
         try:
             if uploaded_file:  # FOTOĞRAF VARSA GEMINI
-                vision_model = genai.GenerativeModel('models/gemini-1.5-flash-latest')
+                # Eğer Flash 1.5 hata veriyorsa, bu model kesin çalışır:
+                vision_model = genai.GenerativeModel('gemini-1.5-flash-8b')
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
