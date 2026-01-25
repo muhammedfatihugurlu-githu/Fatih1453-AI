@@ -1,6 +1,7 @@
 import streamlit as st
 from groq import Groq
 import time
+import base64
 
 # API Key'i Streamlit Secrets'tan alıyoruz
 # Eğer hata alırsan Streamlit Secrets kısmına yeni bir key koymayı unutma!
@@ -9,9 +10,17 @@ try:
 except Exception as e:
     st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol et abim.")
 
+# Fotoğrafı yapay zekanın anlayacağı dile çeviren fonksiyon
+def encode_image(image_file):
+    return base64.b64encode(image_file.read()).decode('utf-8')
+
+# Başlıklar
 st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️", layout="wide")
 st.title("🇹🇷⚔️ Fatih1453 - v0.2")
 st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
+
+# Fotoğraf yükleme butonu (Ana sayfada gözükür)
+uploaded_file = st.file_uploader("📸 Fotoğraf Gönder", type=["jpg", "jpeg", "png"])
 
 # Hafıza (Chat History) ayarları
 if "messages" not in st.session_state:
@@ -22,41 +31,54 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Kullanıcı girişi
 if prompt := st.chat_input("Fatih1453'e yaz..."):
-    # Kullanıcı mesajını hafızaya ekle ve ekrana yaz
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
-    # Asistan cevabı
     with st.chat_message("assistant", avatar="🤖"):
         try:
-            # Model ismini daha stabil olanla güncelledim
-            completion = client.chat.completions.create(
-                model="llama-3.3-70b-versatile", 
-                messages=[
+            # FOTOĞRAF VARSA: Vizyon modelini kullan, YOKSA: 70b ile devam et
+            model_id = "llama-3.2-11b-vision-preview" if uploaded_file else "llama-3.3-70b-versatile"
+            
+            # Mesaj içeriğini Vision formatına uygun hazırlıyoruz
+            if uploaded_file:
+                base64_image = encode_image(uploaded_file)
+                api_messages = [
+                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Resimdekileri yorumla. Çok ama çok komik birisin. Muhammed Fatih Uğurlu, seni yapan kişi, 2026 yılında bir kodyazar, Osmanlı padişahı değil, ona saygılı ol, birde tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
+                        ]
+                    }
+                ]
+            else:
+                # Normal metin sohbeti (Senin eski sistemin)
+                api_messages = [
                     {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Çok ama çok komik birisin. Muhammed Fatih Uğurlu, seni yapan kişi, 2026 yılında bir kodyazar, Osmanlı padişahı değil, ona saygılı ol, birde tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
                     *st.session_state.messages
-                ],
+                ]
+
+            completion = client.chat.completions.create(
+                model=model_id,
+                messages=api_messages,
                 stream=True
             )
             
             full_response = ""
             placeholder = st.empty()
-            
             for chunk in completion:
                 content = chunk.choices[0].delta.content
-                if content is not None:
+                if content:
                     full_response += content
                     placeholder.markdown(full_response + "▌")
-            
             placeholder.markdown(full_response)
-            # Cevabı hafızaya kaydet
             st.session_state.messages.append({"role": "assistant", "content": full_response})
             
         except Exception as e:
-            st.error(f"Yapmaa, bir hata oluştu: {e}")
+            st.error(f"yapmaa, bir sorun çıktı: {e}")
 
 # --- HAFIZA KONTROLÜ (En üstte olmalı) ---
 if "messages" not in st.session_state:
