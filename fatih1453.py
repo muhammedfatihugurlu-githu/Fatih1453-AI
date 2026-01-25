@@ -60,9 +60,10 @@ with st.container(border=True): # Bu kısım kutu içine alır ve sabit durur
     st.subheader("📸 Fotoğraf Gönder")
     uploaded_file = st.file_uploader("Bir resim seç", type=["jpg", "jpeg", "png"], key="sabit_yukleyici")
     if uploaded_file:
-        st.image(uploaded_file, caption="Analiz edilecek resim", width=150)
+        st.image(uploaded_file, caption="Analiz edilecek resim", width=200)
 
 st.divider() # Chat ile yükleme alanını ayırır
+
 
 # Mesajları Ekrana Yazdır
 for message in st.session_state.messages:
