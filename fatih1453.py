@@ -58,7 +58,7 @@ with st.popover("📸 Fotoğraf Gönder"):
     uploaded_file = st.file_uploader("Bir resim seçin...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
         # width=300 yaparsan resim daha derli toplu durur
-        st.image(uploaded_file, caption="Yüklendi!", width=200,)
+        st.image(uploaded_file, caption="Yüklendi!", width=150,)
 
 # Mesajları Ekrana Yazdır
 for message in st.session_state.messages:
