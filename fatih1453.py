@@ -57,7 +57,8 @@ st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 with st.popover("📸 Fotoğraf Gönder"):
     uploaded_file = st.file_uploader("Bir resim seçin...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
-        st.image(uploaded_file, caption="Yüklendi!")
+        # width=300 yaparsan resim daha derli toplu durur
+        st.image(uploaded_file, caption="Yüklendi!", width=300)
 
 # Mesajları Ekrana Yazdır
 for message in st.session_state.messages:
