@@ -1,127 +1,107 @@
 import streamlit as st
 from groq import Groq
+import google.generativeai as genai
+from PIL import Image
 import time
-import base64
 
-# API Key'i Streamlit Secrets'tan alıyoruz
-# Eğer hata alırsan Streamlit Secrets kısmına yeni bir key koymayı unutma!
-try:
-    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
-except Exception as e:
-    st.error("API Anahtarı bulunamadı! Lütfen Streamlit Secrets ayarlarını kontrol et abim.")
-
-# Fotoğrafı yapay zekanın anlayacağı dile çeviren fonksiyon
-def encode_image(image_file):
-    return base64.b64encode(image_file.read()).decode('utf-8')
-
-# Başlıklar
+# --- AYARLAR VE API BAĞLANTILARI ---
 st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️", layout="wide")
-st.title("🇹🇷⚔️ Fatih1453 - v0.2")
-st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 
-# --- ŞIK DOSYA YÜKLEME BUTONU ---
-# Bu buton ana sayfada durur, basınca içindeki yükleme alanı açılır.
-with st.popover("📸 Fotoğraf Gönder"):
-    uploaded_file = st.file_uploader("Analiz edilecek resmi seç", type=["jpg", "jpeg", "png"])
-    if uploaded_file:
-        st.image(uploaded_file, caption="Yüklenen Resim Önizleme")
+try:
+    # Groq (Metin Zekası için)
+    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
+    # Gemini (Fotoğraf Görme Yeteneği için)
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+except Exception as e:
+    st.error("API Anahtarları eksik reis! Secrets kısmını kontrol et.")
 
-# Hafıza (Chat History) ayarları
+# --- SİSTEM MESAJI (KARAKTER TANIMI) ---
+FATIH_PROMPT = """Senin adın Fatih1453. Samimi, bilge ve çok esprili birisin. 
+Seni Muhammed Fatih Uğurlu yaptı.O 2026 yılında bir kodyazaz. Ona saygılı ol. 
+Zeynep Sude Oktay ile sevgililer (kimse sormadıkça söyleme). 
+Türkçe konuş, resimleri analiz ederken komik benzetmeler yap."""
+
+# --- HAFIZA AYARLARI ---
 if "messages" not in st.session_state:
     st.session_state.messages = []
+if "arsiv" not in st.session_state:
+    st.session_state.arsiv = {}
 
-# Eski mesajları ekrana bas
+# --- SIDEBAR (YAN MENÜ) ---
+with st.sidebar:
+    st.title("📜 Fetih Arşivi")
+    if st.button("➕ Yeni Sohbet", use_container_width=True):
+        st.session_state.messages = []
+        st.rerun()
+    
+    st.divider()
+    for isim in list(st.session_state.arsiv.keys()):
+        col1, col2 = st.columns([4, 1])
+        if col1.button(isim, key=f"load_{isim}"):
+            st.session_state.messages = st.session_state.arsiv[isim]
+            st.rerun()
+        if col2.button("🗑️", key=f"del_{isim}"):
+            del st.session_state.arsiv[isim]
+            st.rerun()
+
+# --- ANA SAYFA ARAYÜZÜ ---
+st.title("🇹🇷⚔️ Fatih1453 - v0.3")
+st.caption("Muhammed Fatih Uğurlu'nun Gözü Açık Asistanı")
+
+# ŞIK FOTOĞRAF YÜKLEME BUTONU (POPOVER)
+with st.popover("📸 Fotoğraf Gönder"):
+    uploaded_file = st.file_uploader("Bir resim seç hünkarım...", type=["jpg", "jpeg", "png"])
+    if uploaded_file:
+        st.image(uploaded_file, caption="Analiz edilecek resim")
+
+# MESAJLARI EKRANA BAS
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
+# --- CHAT MANTIĞI ---
 if prompt := st.chat_input("Fatih1453'e yaz..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
 
     with st.chat_message("assistant", avatar="🤖"):
+        full_response = ""
+        placeholder = st.empty()
+
         try:
-            # FOTOĞRAF VARSA: Vizyon modelini kullan, YOKSA: 70b ile devam et
-           # Güncel Vision modelini buraya yazdım
-            model_id = "llava-v1.5-7b-4096" if uploaded_file else "llama-3.3-70b-versatile"
-            
-            # Mesaj içeriğini Vision formatına uygun hazırlıyoruz
+            # SENARYO 1: FOTOĞRAF VARSA (GEMINI DEVREDE)
             if uploaded_file:
-                base64_image = encode_image(uploaded_file)
-                api_messages = [
-                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Resimdekileri yorumla. Çok ama çok komik birisin. Muhammed Fatih Uğurlu, seni yapan kişi, 2026 yılında bir kodyazar, Osmanlı padişahı değil, ona saygılı ol, birde tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
-                    {
-                        "role": "user",
-                        "content": [
-                            {"type": "text", "text": prompt},
-                            {"type": "image_url", "image_url": {"url": f"data:image/jpeg;base64,{base64_image}"}}
-                        ]
-                    }
-                ]
+                vision_model = genai.GenerativeModel('gemini-1.5-flash')
+                img = Image.open(uploaded_file)
+                # Gemini stream desteklese de hızlı olduğu için direkt alıyoruz
+                response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
+                full_response = response.text
+                placeholder.markdown(full_response)
+            
+            # SENARYO 2: SADECE METİN VARSA (GROQ 70B DEVREDE)
             else:
-                # Normal metin sohbeti (Senin eski sistemin)
-                api_messages = [
-                    {"role": "system", "content": "Senin adın Fatih1453. Samimi ve esprili ol. Bilge birisin. Çok ama çok komik birisin. Muhammed Fatih Uğurlu, seni yapan kişi, 2026 yılında bir kodyazar, Osmanlı padişahı değil, ona saygılı ol, birde tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. İnsanlara her konuda yardımcı ol. Türkçe konuş."},
-                    *st.session_state.messages
-                ]
+                completion = client.chat.completions.create(
+                    model="llama-3.3-70b-versatile",
+                    messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
+                    stream=True
+                )
+                for chunk in completion:
+                    content = chunk.choices[0].delta.content
+                    if content:
+                        full_response += content
+                        placeholder.markdown(full_response + "▌")
+                placeholder.markdown(full_response)
 
-            completion = client.chat.completions.create(
-                model=model_id,
-                messages=api_messages,
-                stream=True
-            )
-            
-            full_response = ""
-            placeholder = st.empty()
-            for chunk in completion:
-                content = chunk.choices[0].delta.content
-                if content:
-                    full_response += content
-                    placeholder.markdown(full_response + "▌")
-            placeholder.markdown(full_response)
             st.session_state.messages.append({"role": "assistant", "content": full_response})
-            
+
         except Exception as e:
-            st.error(f"yapmaa, bir sorun çıktı: {e}")
+            st.error(f"Hünkarım bir sorun çıktı: {e}")
 
-# --- HAFIZA KONTROLÜ (En üstte olmalı) ---
-if "messages" not in st.session_state:
-    st.session_state.messages = []
-
-# HATA ALDIĞIN YER BURASI: Arşivi de buraya tanımlamalıyız
-if "arsiv" not in st.session_state:
-    st.session_state.arsiv = {}  # Boş bir sözlük oluşturduk
-
-# --- YAN MENÜ (SIDEBAR) AYARLARI ---
-with st.sidebar:
-    st.title("📜 Fetih Arşivi")
-
-    if st.button("➕ Yeni Sohbet", use_container_width=True):
-        st.session_state.messages = []
-        st.rerun()
-
-    if st.button("💾 Sohbeti Kaydet", use_container_width=True):
-        if st.session_state.messages:
-            tarih = time.strftime("%H:%M")
-            ozet = st.session_state.messages[0]["content"][:15]
-            # Mesajları kopyalarken list() kullanmak doğru bir yaklaşım
-            st.session_state.arsiv[f"{tarih} | {ozet}"] = list(st.session_state.messages)
-            st.success("Kaydedildi abim!")  # Bu satır if bloğunun içinde olmalıydı
-
-    st.divider()
-    st.subheader("Eski Kayıtlar")
-
-    # Sözlük üzerinde işlem yaparken list(keys()) kullanmak silme işlemleri için güvenlidir
-    for isim in list(st.session_state.arsiv.keys()):
-        c1, c2 = st.columns([4, 1])
-        
-        # Sohbeti Geri Yükle
-        if c1.button(f"{isim}", key=f"load_{isim}"):
-            st.session_state.messages = st.session_state.arsiv[isim]
-            st.rerun()
-            
-        # Sohbeti Sil
-        if c2.button("🗑️", key=f"del_{isim}"):
-            del st.session_state.arsiv[isim]
-            st.rerun() 
+# --- KAYDETME BUTONU (SAYFA SONU) ---
+if st.button("💾 Sohbeti Arşive Kaldır"):
+    if st.session_state.messages:
+        tarih = time.strftime("%H:%M")
+        ozet = st.session_state.messages[0]["content"][:15]
+        st.session_state.arsiv[f"{tarih} | {ozet}"] = list(st.session_state.messages)
+        st.toast("Sohbet arşive eklendi!", icon="✅")
