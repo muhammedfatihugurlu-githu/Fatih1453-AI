@@ -43,8 +43,8 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
     with st.chat_message("assistant", avatar="🤖"):
         try:
             # FOTOĞRAF VARSA: Vizyon modelini kullan, YOKSA: 70b ile devam et
-           # En güncel vision modelini buraya ekledik
-            model_id = "pixtral-12b-2409" if uploaded_file else "llama-3.3-70b-versatile"
+           # Groq'un şu an kabul ettiği en güncel görme modeli
+            model_id = "llama-3.2-11b-vision-preview" if uploaded_file else "llama-3.3-70b-versatile"
             
             # Mesaj içeriğini Vision formatına uygun hazırlıyoruz
             if uploaded_file:
