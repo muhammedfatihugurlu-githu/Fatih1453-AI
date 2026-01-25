@@ -19,8 +19,12 @@ st.set_page_config(page_title="Fatih1453 AI", page_icon="🇹🇷⚔️", layout
 st.title("🇹🇷⚔️ Fatih1453 - v0.2")
 st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 
-# Fotoğraf yükleme butonu (Ana sayfada gözükür)
-uploaded_file = st.file_uploader("📸 Fotoğraf Gönder", type=["jpg", "jpeg", "png"])
+# --- ŞIK DOSYA YÜKLEME BUTONU ---
+# Bu buton ana sayfada durur, basınca içindeki yükleme alanı açılır.
+with st.popover("📸 Fotoğraf Gönder"):
+    uploaded_file = st.file_uploader("Analiz edilecek resmi seç", type=["jpg", "jpeg", "png"])
+    if uploaded_file:
+        st.image(uploaded_file, caption="Yüklenen Resim Önizleme")
 
 # Hafıza (Chat History) ayarları
 if "messages" not in st.session_state:
