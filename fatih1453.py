@@ -49,16 +49,20 @@ with st.sidebar:
             del st.session_state.arsiv[isim]
             st.rerun()
 
-# 4. ANA SAYFA TASARIMI
+# --- 4. ANA SAYFA TASARIMI ---
 st.title("🇹🇷⚔️ Fatih1453 - v0.3")
 st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 
-# Şık Fotoğraf Yükleme (Popover)
-with st.popover("📸 Fotoğraf Gönder"):
-    uploaded_file = st.file_uploader("Bir resim seçin...", type=["jpg", "jpeg", "png"])
+# Popover yerine direkt bir sütun (column) veya expander kullanarak sabitleyebiliriz.
+# Eğer "mesaj atınca kapanmasın" istiyorsan en temizi direkt ekrana koymaktır:
+
+with st.container(border=True): # Bu kısım kutu içine alır ve sabit durur
+    st.subheader("📸 Fotoğraf Gönder")
+    uploaded_file = st.file_uploader("Bir resim seç", type=["jpg", "jpeg", "png"], key="sabit_yukleyici")
     if uploaded_file:
-        # width=300 yaparsan resim daha derli toplu durur
-        st.image(uploaded_file, caption="Yüklendi!", width=150,)
+        st.image(uploaded_file, caption="Analiz edilecek resim", width=150)
+
+st.divider() # Chat ile yükleme alanını ayırır
 
 # Mesajları Ekrana Yazdır
 for message in st.session_state.messages:
