@@ -54,7 +54,7 @@ st.title("🇹🇷⚔️ Fatih1453 - v0.3")
 st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 
 # Şık Fotoğraf Yükleme (Popover)
-with st.popover("📸 Fotoğraf Gönder"):
+with st.expander("📸 Fotoğraf Gönder", expanded=False):
     uploaded_file = st.file_uploader("Bir resim seçin...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
         # width=300 yaparsan resim daha derli toplu durur
