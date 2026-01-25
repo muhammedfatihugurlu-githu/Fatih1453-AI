@@ -44,7 +44,7 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
         try:
             # FOTOĞRAF VARSA: Vizyon modelini kullan, YOKSA: 70b ile devam et
            # En güncel vision modelini buraya ekledik
-            model_id = "llama-3.2-90b-vision-preview" if uploaded_file else "llama-3.3-70b-versatile"
+            model_id = "pixtral-12b-2409" if uploaded_file else "llama-3.3-70b-versatile"
             
             # Mesaj içeriğini Vision formatına uygun hazırlıyoruz
             if uploaded_file:
