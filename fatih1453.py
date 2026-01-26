@@ -86,11 +86,20 @@ with cols[1]:
 # Sesle gelen metin varsa onu kullan, yoksa klavyeyi kullan
 prompt = text_from_voice if text_from_voice else prompt_input
 
-# 5. CHAT MANTIĞI
+# --- 5. CHAT MANTIĞI ---
+
+# 1. Promptu en başa alalım ki her yerden erişilsin
 FATIH_PROMPT = "Sen samimi, esprili Fatih1453'sün. Senin yapımcın Muhammed Fatih Uğurlu'dur. Kullanıcı kendisinin Muhammed Fatih Uğurlu olduğunu söylerse ona 'abim' diye hitap et, ona saygı duy, birde Muhammed Fatih Uğurlu'nun tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. Çok zekisin. Kullanıcılara hoş ve net cevaplar ver, araya espri kaynat. Her cevap başında 'vay, hoşgeldin, ooo' kelimelerini kullanma."
 
+# 2. Resim kilidini kontrol et
 if "resim_bakildi" not in st.session_state:
     st.session_state.resim_bakildi = False
+
+# 3. Sesli ve Yazılı Girişi Yakala
+voice_prompt = speech_to_text(language='tr', start_prompt="🎤 Sesli Sor", stop_prompt="✅ Durdur", key='speech_input')
+chat_prompt = st.chat_input("Fatih1453'e yaz...")
+
+prompt = voice_prompt if voice_prompt else chat_prompt
 
 if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -102,15 +111,16 @@ if prompt:
         placeholder = st.empty()
 
         try:
+            # Resim varsa ve daha önce bakılmadıysa Gemini (Model ismine dikkat!)
             if uploaded_file and not st.session_state.resim_bakildi:
-                vision_model = genai.GenerativeModel('gemini-2.0-flash') # Model ismini düzelttim
+                vision_model = genai.GenerativeModel('gemini-2.5-flash') # En stabil model budur
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
                 placeholder.markdown(full_response)
                 st.session_state.resim_bakildi = True
             
-            else:
+            else:  # Resim yoksa veya bakıldıysa Llama
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
@@ -125,4 +135,5 @@ if prompt:
 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
-            st.error(f"Hata: {e}") # Sondaki noktayı kaldırdım!
+            # HATAYI BURADA NOKTASIZ BIRAKTIK
+            st.error(f"Bir sıkıntı çıktı hünkarım: {e}")
