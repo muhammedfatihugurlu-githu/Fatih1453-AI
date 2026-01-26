@@ -5,30 +5,12 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
+# --- 🪄 ARAYÜZÜ TEMİZLEME (MADE WITH STREAMLIT'İ SİLME) ---
 st.markdown("""
     <style>
-    /* 1. Sağ üstteki Deploy butonu ve menüyü uçur */
-    .stAppDeployButton, [data-testid="stToolbar"], #MainMenu {display: none !important;}
-    
-    /* 2. EN ÖNEMLİSİ: En alttaki o gıcık rozet ve footer yapısı */
-    footer {visibility: hidden; height: 0px !important; display: none !important;}
-    [data-testid="stStatusWidget"] {display: none !important;}
-    
-    /* 3. Streamlit Cloud'un özel badge (rozet) elemanını bul ve yok et */
-    div[class*="viewerBadge"], div[id*="viewer-badge"], .stViewerBadge {
-        display: none !important;
-    }
-
-    /* 4. Sayfa sonundaki gereksiz boşluğu sil */
-    .stAppViewFooterContainer {
-        display: none !important;
-        visibility: hidden !important;
-    }
-    
-    /* 5. Alt kısımdaki 'Streamlit' yazan her şeyi hedef al */
-    div[data-testid="stActionButtonIcon"] + div {
-        display: none !important;
-    }
+    #MainMenu {visibility: hidden;}
+    footer {visibility: hidden;}
+    header {visibility: hidden;}
     </style>
     """, unsafe_allow_html=True)
 
