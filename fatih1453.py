@@ -5,33 +5,6 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
-# --- 🪄 ALT KISMI SİYAH BANTLA KAPATMA (KESİN ÇÖZÜM) ---
-st.markdown("""
-    <style>
-    /* Menü butonunu gizle (diğer uygulamalar görünmesin) */
-    #MainMenu {visibility: hidden;}
-    
-    /* En alt footer alanını tamamen kapat */
-    footer {
-        visibility: hidden;
-    }
-    
-    /* Ekranın en altına siyah bir şerit çek, yazının üstünü ört */
-    .stApp > footer {
-        visibility: hidden;
-    }
-    
-    /* Alternatif: Sayfanın en altına çök ve orayı temizle */
-    div[data-testid="stStatusWidget"] {
-        visibility: hidden;
-    }
-
-    /* Mobildeki o sinir bozucu beyaz boşluğu engelle */
-    .block-container {
-        padding-bottom: 0rem;
-    }
-    </style>
-    """, unsafe_allow_html=True)
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -150,4 +123,5 @@ if prompt:
         except Exception as e:
             st.error(f"Hata: {e}")
 
-st.write("<br><br><br>", unsafe_allow_html=True)
+# Sayfanın en altına boşluk ekleyerek o yazıyı ekranın dışına itiyoruz
+st.write(" <br><br> " * 20, unsafe_allow_html=True)
