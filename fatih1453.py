@@ -7,29 +7,26 @@ from streamlit_mic_recorder import mic_recorder, speech_to_text
 
 st.markdown("""
     <style>
-    /* 1. Tüm menü, header ve standart footer'ı kapat */
-    #MainMenu, footer, header {visibility: hidden; display: none !important;}
+    /* 1. Sağ üstteki Deploy butonu ve menüyü uçur */
+    .stAppDeployButton, [data-testid="stToolbar"], #MainMenu {display: none !important;}
     
-    /* 2. 'st' ile başlayan tüm statü ve badge bileşenlerini hedef al (Joker seçici) */
-    [data-testid="stStatusWidget"], 
-    [class*="viewerBadge"], 
-    [id*="viewer-badge"] {
+    /* 2. EN ÖNEMLİSİ: En alttaki o gıcık rozet ve footer yapısı */
+    footer {visibility: hidden; height: 0px !important; display: none !important;}
+    [data-testid="stStatusWidget"] {display: none !important;}
+    
+    /* 3. Streamlit Cloud'un özel badge (rozet) elemanını bul ve yok et */
+    div[class*="viewerBadge"], div[id*="viewer-badge"], .stViewerBadge {
         display: none !important;
     }
 
-    /* 3. Ekranın en altındaki tüm container yapısını daralt */
-    .stAppViewFooterContainer, .stAppViewFooter {
+    /* 4. Sayfa sonundaki gereksiz boşluğu sil */
+    .stAppViewFooterContainer {
         display: none !important;
-        height: 0px !important;
-    }
-
-    /* 4. 'Streamlit' kelimesini içeren tüm linkleri ve altındaki küçük yazıları sil */
-    a[href*="streamlit.io"] {
-        display: none !important;
+        visibility: hidden !important;
     }
     
-    /* 5. Deploy butonunu da gizle (mobilde sırıtmaması için) */
-    .stAppDeployButton {
+    /* 5. Alt kısımdaki 'Streamlit' yazan her şeyi hedef al */
+    div[data-testid="stActionButtonIcon"] + div {
         display: none !important;
     }
     </style>
