@@ -150,3 +150,4 @@ if prompt:
         except Exception as e:
             st.error(f"Hata: {e}")
 
+st.write("<br><br><br>", unsafe_allow_html=True)
