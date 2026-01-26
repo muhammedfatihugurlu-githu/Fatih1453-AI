@@ -84,7 +84,7 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
         try:
             # ŞART: Resim var mı VE daha önce bakılmadı mı?
             if uploaded_file and not st.session_state.resim_bakildi:
-                vision_model = genai.GenerativeModel('gemini-2.0-flash')
+                vision_model = genai.GenerativeModel('gemini-2.5-flash')
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
