@@ -123,5 +123,29 @@ if prompt:
         except Exception as e:
             st.error(f"Hata: {e}")
 
-# Sayfanın en altına boşluk ekleyerek o yazıyı ekranın dışına itiyoruz
-st.write(" <br><br> " * 20, unsafe_allow_html=True)
+# --- 🪄 GÖRÜNMEZ ÖRTÜ (KESİN ÇÖZÜM) ---
+st.markdown("""
+    <style>
+    /* Diğer uygulamalar menüsünü gizle */
+    #MainMenu {visibility: hidden;}
+    
+    /* Alt barı tamamen şeffaf yap ve tıklanmasını engelle */
+    footer {
+        background-color: transparent;
+        color: transparent;
+        user-select: none;
+        pointer-events: none;
+    }
+    
+    /* Streamlit'in yapışkan alt bandını hedef al ve yok et */
+    [data-testid="stStatusWidget"] {
+        display: none;
+    }
+
+    /* Mobildeki en altta kalan boşluğu ve çizgiyi siler */
+    footer:after {
+        content:'';
+        display:none;
+    }
+    </style>
+    """, unsafe_allow_html=True)
