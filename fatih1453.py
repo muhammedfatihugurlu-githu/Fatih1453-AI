@@ -5,12 +5,22 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
-# --- 🪄 ARAYÜZÜ TEMİZLEME (MADE WITH STREAMLIT'İ SİLME) ---
+# --- 🪄 SADECE ALT YAZIYI VE MENÜYÜ GİZLE (SİDEBAR KALSIN) ---
 st.markdown("""
     <style>
-    #MainMenu {visibility: hidden;}
+    /* Diğer uygulamaları gösteren menüyü gizle */
+    #MainMenu {visibility: hidden;} 
+    
+    /* En alttaki Created by Streamlit yazısını siler */
     footer {visibility: hidden;}
+    
+    /* Sayfanın altındaki boşluğu sıfırlar */
+    .stAppDeployButton {display:none;}
+    [data-testid="stStatusWidget"] {visibility: hidden;}
+    
+    /* Sidebar (Yan menü) butonunu görünür kılar, sadece yazıları siler */
     header {visibility: hidden;}
+    .st-emotion-cache-1avcm0n {visibility: visible;}
     </style>
     """, unsafe_allow_html=True)
 
