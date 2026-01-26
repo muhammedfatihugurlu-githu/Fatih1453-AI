@@ -5,25 +5,33 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
-# --- 🪄 SADECE ALT YAZIYI VE MENÜYÜ GİZLE (SİDEBAR KALSIN) ---
+# --- 🪄 ALT KISMI SİYAH BANTLA KAPATMA (KESİN ÇÖZÜM) ---
 st.markdown("""
     <style>
-    /* Diğer uygulamaları gösteren menüyü gizle */
-    #MainMenu {visibility: hidden;} 
+    /* Menü butonunu gizle (diğer uygulamalar görünmesin) */
+    #MainMenu {visibility: hidden;}
     
-    /* En alttaki Created by Streamlit yazısını siler */
-    footer {visibility: hidden;}
+    /* En alt footer alanını tamamen kapat */
+    footer {
+        visibility: hidden;
+    }
     
-    /* Sayfanın altındaki boşluğu sıfırlar */
-    .stAppDeployButton {display:none;}
-    [data-testid="stStatusWidget"] {visibility: hidden;}
+    /* Ekranın en altına siyah bir şerit çek, yazının üstünü ört */
+    .stApp > footer {
+        visibility: hidden;
+    }
     
-    /* Sidebar (Yan menü) butonunu görünür kılar, sadece yazıları siler */
-    header {visibility: hidden;}
-    .st-emotion-cache-1avcm0n {visibility: visible;}
+    /* Alternatif: Sayfanın en altına çök ve orayı temizle */
+    div[data-testid="stStatusWidget"] {
+        visibility: hidden;
+    }
+
+    /* Mobildeki o sinir bozucu beyaz boşluğu engelle */
+    .block-container {
+        padding-bottom: 0rem;
+    }
     </style>
     """, unsafe_allow_html=True)
-
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
