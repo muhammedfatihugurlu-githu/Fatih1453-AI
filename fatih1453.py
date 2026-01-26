@@ -7,19 +7,21 @@ from streamlit_mic_recorder import mic_recorder, speech_to_text
 
 st.markdown("""
     <style>
-    /* Sağ üstteki menüyü, alttaki footer'ı ve Deploy butonunu tamamen siler */
-    #MainMenu {display: none !important;}
-    footer {display: none !important;}
-    header {display: none !important;}
+    /* Tüm platform bileşenlerini kökten kazıyalım */
+    #MainMenu, footer, header {display: none !important;}
     .stAppDeployButton {display: none !important;}
     
-    /* "Streamlit" yazısı içeren o küçük linki de hedef alalım */
+    /* Streamlit Cloud Rozeti (Viewer Badge) için özel saldırı */
+    [data-testid="stStatusWidget"] {display: none !important;}
     #viewer-badge {display: none !important;}
+    .viewerBadge_container__177_X {display: none !important;}
     
-    /* Sayfanın altındaki boşluğu temizle */
-    .block-container {
-        padding-bottom: 1rem !important;
-    }
+    /* Eğer bir link veya küçük ikon kalırsa diye her ihtimali kapatalım */
+    a[href*="streamlit.io"] {display: none !important;}
+    
+    /* Sayfanın en altındaki o gıcık boşluğu tamamen sıfırla */
+    .stAppViewFooterContainer {display: none !important;}
+    .stAppViewFooter {display: none !important;}
     </style>
     """, unsafe_allow_html=True)
 
