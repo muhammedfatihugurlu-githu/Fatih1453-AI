@@ -2,3 +2,4 @@ streamlit
 groq
 google-generativeai
 Pillow
+streamlit-mic-recorder

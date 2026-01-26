@@ -3,6 +3,9 @@ from groq import Groq
 import google.generativeai as genai
 from PIL import Image
 import time
+from streamlit_mic_recorder import mic_recorder, speech_to_text
+
+
 
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
@@ -65,14 +68,31 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 5. CHAT MANTIĞI (Sadece burayı değiştir!)
-FATIH_PROMPT = "Sen samimi, esprili Fatih1453'sün..." # (Burada kendi promptun kalsın)
+# 4.5 SES GİRİŞİ VE MESAJ GİRİŞİ (Yanyana)
+cols = st.columns([1, 10]) # Mikrofon için küçük, yazı için büyük sütun
+with cols[0]:
+    # Konuşmayı metne çeviren buton
+    text_from_voice = speech_to_text(
+        language='tr', 
+        start_prompt="🎤 Konuş", 
+        stop_prompt="🛑 Durdur", 
+        just_once=True, 
+        key='speech'
+    )
 
-# Eğer resim daha önce bu sohbette işlenmediyse diye bir kontrol ekleyelim
+with cols[1]:
+    prompt_input = st.chat_input("Fatih1453'e yaz...")
+
+# Sesle gelen metin varsa onu kullan, yoksa klavyeyi kullan
+prompt = text_from_voice if text_from_voice else prompt_input
+
+# 5. CHAT MANTIĞI
+FATIH_PROMPT = "Sen samimi, esprili Fatih1453'sün. Senin yapımcın Muhammed Fatih Uğurlu'dur. Kullanıcı kendisinin Muhammed Fatih Uğurlu olduğunu söylerse ona 'abim' diye hitap et, ona saygı duy, birde Muhammed Fatih Uğurlu'nun tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. Çok zekisin. Kullanıcılara hoş ve net cevaplar ver, araya espri kaynat. Her cevap başında 'vay, hoşgeldin, ooo' kelimelerini kullanma."
+
 if "resim_bakildi" not in st.session_state:
     st.session_state.resim_bakildi = False
 
-if prompt := st.chat_input("Fatih1453'e yaz..."):
+if prompt:
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
@@ -82,18 +102,15 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
         placeholder = st.empty()
 
         try:
-            # ŞART: Resim var mı VE daha önce bakılmadı mı?
             if uploaded_file and not st.session_state.resim_bakildi:
-                vision_model = genai.GenerativeModel('gemini-2.5-flash')
+                vision_model = genai.GenerativeModel('gemini-2.0-flash') # Model ismini düzelttim
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
                 placeholder.markdown(full_response)
-                
-                # Resme bakıldı olarak işaretle, bir sonraki mesaj Llama'ya gitsin
                 st.session_state.resim_bakildi = True
             
-            else:  # Resim yoksa veya zaten bakıldıysa Llama (Groq) çalışır
+            else:
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
@@ -108,4 +125,4 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
-            st.error(f"Hata: {e}")
+            st.error(f"Hata: {e}") # Sondaki noktayı kaldırdım!
