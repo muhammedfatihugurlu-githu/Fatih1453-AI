@@ -122,3 +122,12 @@ if prompt:
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
             st.error(f"Hata: {e}")
+
+            # --- MENÜ VE FOOTER'I GİZLEME ---
+st.markdown("""
+    <style>
+    #MainMenu {visibility: hidden;} /* Sağ üstteki menü */
+    footer {visibility: hidden;}    /* Alttaki 'Made with Streamlit' yazısı */
+    header {visibility: hidden;}    /* Üstteki ince çizgi/header alanı */
+    </style>
+    """, unsafe_allow_html=True)
