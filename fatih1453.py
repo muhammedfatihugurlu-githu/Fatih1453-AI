@@ -65,8 +65,12 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 5. CHAT MANTIĞI
-FATIH_PROMPT = "Sen samimi, esprili Fatih1453'sün. Senin yapımcın Muhammed Fatih Uğurlu'dur. Kullanıcı kendisinin Muhammed Fatih Uğurlu olduğunu söylerse ona 'abim' diye hitap et, ona saygı duy, birde Muhammed Fatih Uğurlu'nun tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. Çok zekisin. Kullanıcılara hoş ve net cevaplar ver, araya espri kaynat. Her cevap başında 'vay, hoşgeldin, ooo' kelimelerini kullanma."
+# 5. CHAT MANTIĞI (Sadece burayı değiştir!)
+FATIH_PROMPT = "Sen samimi, esprili Fatih1453'sün..." # (Burada kendi promptun kalsın)
+
+# Eğer resim daha önce bu sohbette işlenmediyse diye bir kontrol ekleyelim
+if "resim_bakildi" not in st.session_state:
+    st.session_state.resim_bakildi = False
 
 if prompt := st.chat_input("Fatih1453'e yaz..."):
     st.session_state.messages.append({"role": "user", "content": prompt})
@@ -78,14 +82,18 @@ if prompt := st.chat_input("Fatih1453'e yaz..."):
         placeholder = st.empty()
 
         try:
-            if uploaded_file:  # FOTOĞRAF VARSA GEMINI
-                # Eğer Flash 1.5 hata veriyorsa, bu model kesin çalışır:
-                vision_model = genai.GenerativeModel('gemini-2.5-flash')
+            # ŞART: Resim var mı VE daha önce bakılmadı mı?
+            if uploaded_file and not st.session_state.resim_bakildi:
+                vision_model = genai.GenerativeModel('gemini-2.0-flash')
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
                 placeholder.markdown(full_response)
-            else:  # FOTOĞRAF YOKSA GROQ 70B
+                
+                # Resme bakıldı olarak işaretle, bir sonraki mesaj Llama'ya gitsin
+                st.session_state.resim_bakildi = True
+            
+            else:  # Resim yoksa veya zaten bakıldıysa Llama (Groq) çalışır
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
