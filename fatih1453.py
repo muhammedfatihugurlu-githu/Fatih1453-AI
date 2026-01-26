@@ -5,8 +5,6 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
-
-
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -21,6 +19,14 @@ except Exception as e:
     st.error("API Anahtarlarında sıkıntı var reis!")
 
 st.set_page_config(page_title="Fatih1453 - v0.3", page_icon="🇹🇷⚔️", layout="wide")
+
+# --- FATİH KİŞİLİĞİ (Sarı hatayı önlemek için en tepede) ---
+FATIH_PROMPT = """
+Sen samimi, esprili Fatih1453'sün. Senin yapımcın Muhammed Fatih Uğurlu'dur. 
+Kullanıcı kendisinin Muhammed Fatih Uğurlu olduğunu söylerse ona 'abim' diye hitap et, ona saygı duy. 
+Muhammed Fatih Uğurlu'nun tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer. 
+Bunu kimse sormadıkça söyleme. Çok zekisin. Esprili cevaplar ver.
+"""
 
 # 3. SIDEBAR (ESKİ KAYITLAR BURADA)
 with st.sidebar:
@@ -68,37 +74,18 @@ for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# 4.5 SES GİRİŞİ VE MESAJ GİRİŞİ (Yanyana)
-cols = st.columns([1, 10]) # Mikrofon için küçük, yazı için büyük sütun
-with cols[0]:
-    # Konuşmayı metne çeviren buton
-    text_from_voice = speech_to_text(
-        language='tr', 
-        start_prompt="🎤 Konuş", 
-        stop_prompt="🛑 Durdur", 
-        just_once=True, 
-        key='speech'
-    )
+# --- 5. CHAT MANTIĞI (SADECE BURAYI KONTROL ET, ESKİ CHAT_INPUT'LARI SİL) ---
 
-with cols[1]:
-    prompt_input = st.chat_input("Fatih1453'e yaz...")
-
-# Sesle gelen metin varsa onu kullan, yoksa klavyeyi kullan
-prompt = text_from_voice if text_from_voice else prompt_input
-
-# --- 5. CHAT MANTIĞI ---
-
-# 1. Promptu en başa alalım ki her yerden erişilsin
-FATIH_PROMPT = "Sen samimi, esprili Fatih1453'sün. Senin yapımcın Muhammed Fatih Uğurlu'dur. Kullanıcı kendisinin Muhammed Fatih Uğurlu olduğunu söylerse ona 'abim' diye hitap et, ona saygı duy, birde Muhammed Fatih Uğurlu'nun tatlı bir sevgilisi var, ismi Zeynep Sude Oktay, ikisi sevgililer, bak bunu kimse sormadıkça söyleme. Çok zekisin. Kullanıcılara hoş ve net cevaplar ver, araya espri kaynat. Her cevap başında 'vay, hoşgeldin, ooo' kelimelerini kullanma."
-
-# 2. Resim kilidini kontrol et
 if "resim_bakildi" not in st.session_state:
     st.session_state.resim_bakildi = False
 
-# 3. Sesli ve Yazılı Girişi Yakala
-voice_prompt = speech_to_text(language='tr', start_prompt="🎤 Sesli Sor", stop_prompt="✅ Durdur", key='speech_input')
+# Sesli giriş (Buton olarak görünür)
+voice_prompt = speech_to_text(language='tr', start_prompt="🎤 Konuş", stop_prompt="🛑 Durdur", key='speech_input_unique')
+
+# Klavye girişi (SAYFADA SADECE BİR TANE OLMALI!)
 chat_prompt = st.chat_input("Fatih1453'e yaz...")
 
+# Ses varsa sesi, yoksa klavyeyi kullan
 prompt = voice_prompt if voice_prompt else chat_prompt
 
 if prompt:
@@ -111,16 +98,15 @@ if prompt:
         placeholder = st.empty()
 
         try:
-            # Resim varsa ve daha önce bakılmadıysa Gemini (Model ismine dikkat!)
             if uploaded_file and not st.session_state.resim_bakildi:
-                vision_model = genai.GenerativeModel('gemini-2.5-flash') # En stabil model budur
+                vision_model = genai.GenerativeModel('gemini-1.5-flash')
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
                 placeholder.markdown(full_response)
                 st.session_state.resim_bakildi = True
             
-            else:  # Resim yoksa veya bakıldıysa Llama
+            else:
                 completion = client.chat.completions.create(
                     model="llama-3.3-70b-versatile",
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
@@ -135,5 +121,4 @@ if prompt:
 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
-            # HATAYI BURADA NOKTASIZ BIRAKTIK
-            st.error(f"Bir sıkıntı çıktı hünkarım: {e}")
+            st.error(f"Hata: {e}")
