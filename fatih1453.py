@@ -34,7 +34,7 @@ with st.sidebar:
             st.session_state.arsiv[f"{tarih} | {ozet}"] = list(st.session_state.messages)
             st.success("Arşive eklendi!")
         else:
-            st.warning("Boş sohbeti kaydedemem hünkarım.")
+            st.warning("Boş sohbeti kaydedememd")
 
     st.divider()
     st.subheader("Eski Kayıtlar")
