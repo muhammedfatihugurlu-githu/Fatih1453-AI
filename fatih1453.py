@@ -50,7 +50,7 @@ with st.sidebar:
             st.rerun()
 
 # 4. ANA SAYFA TASARIMI
-st.title("Reyhan botmusun knk")
+st.title("🇹🇷⚔️ Fatih1453 - v0.3")
 st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 
 # Şık Fotoğraf Yükleme (Popover)
