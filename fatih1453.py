@@ -5,6 +5,24 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
+st.markdown("""
+    <style>
+    /* Sağ üstteki menüyü, alttaki footer'ı ve Deploy butonunu tamamen siler */
+    #MainMenu {display: none !important;}
+    footer {display: none !important;}
+    header {display: none !important;}
+    .stAppDeployButton {display: none !important;}
+    
+    /* "Streamlit" yazısı içeren o küçük linki de hedef alalım */
+    #viewer-badge {display: none !important;}
+    
+    /* Sayfanın altındaki boşluğu temizle */
+    .block-container {
+        padding-bottom: 1rem !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -123,11 +141,3 @@ if prompt:
         except Exception as e:
             st.error(f"Hata: {e}")
 
-            # --- MENÜ VE FOOTER'I GİZLEME ---
-st.markdown("""
-    <style>
-    #MainMenu {visibility: hidden;} /* Sağ üstteki menü */
-    footer {visibility: hidden;}    /* Alttaki 'Made with Streamlit' yazısı */
-    header {visibility: hidden;}    /* Üstteki ince çizgi/header alanı */
-    </style>
-    """, unsafe_allow_html=True)
