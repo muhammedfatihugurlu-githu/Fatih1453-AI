@@ -5,6 +5,36 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
+st.markdown("""
+    <style>
+    /* 1. Tüm menü, header ve standart footer'ı kapat */
+    #MainMenu, footer, header {visibility: hidden; display: none !important;}
+    
+    /* 2. 'st' ile başlayan tüm statü ve badge bileşenlerini hedef al (Joker seçici) */
+    [data-testid="stStatusWidget"], 
+    [class*="viewerBadge"], 
+    [id*="viewer-badge"] {
+        display: none !important;
+    }
+
+    /* 3. Ekranın en altındaki tüm container yapısını daralt */
+    .stAppViewFooterContainer, .stAppViewFooter {
+        display: none !important;
+        height: 0px !important;
+    }
+
+    /* 4. 'Streamlit' kelimesini içeren tüm linkleri ve altındaki küçük yazıları sil */
+    a[href*="streamlit.io"] {
+        display: none !important;
+    }
+    
+    /* 5. Deploy butonunu da gizle (mobilde sırıtmaması için) */
+    .stAppDeployButton {
+        display: none !important;
+    }
+    </style>
+    """, unsafe_allow_html=True)
+
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
