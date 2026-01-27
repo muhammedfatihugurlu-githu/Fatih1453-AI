@@ -5,6 +5,12 @@ from PIL import Image
 import time
 from streamlit_mic_recorder import mic_recorder, speech_to_text
 
+st.set_page_config(
+    page_title="FetihAI", # Ana ekrana eklerken çıkacak varsayılan isim
+    page_icon="icon-512.png", # Klasöründeki logonun adı (veya bir URL)
+    layout="wide"
+)
+
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
@@ -127,7 +133,3 @@ if prompt:
 <link rel="manifest" href="/manifest.json">
 """, unsafe_allow_html=True)
             
-            st.set_page_config(
-    page_title="FetihAI",
-    page_icon="icon-512.png"
-            )
