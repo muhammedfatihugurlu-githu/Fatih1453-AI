@@ -126,3 +126,8 @@ if prompt:
             st.markdown("""
 <link rel="manifest" href="/manifest.json">
 """, unsafe_allow_html=True)
+            
+            st.set_page_config(
+    page_title="FetihAI",
+    page_icon="icon-512.png"
+            )
