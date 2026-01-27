@@ -11,6 +11,17 @@ st.set_page_config(
     layout="wide"
 )
 
+# Bu kodu st.set_page_config'in hemen altına ekle
+st.markdown(f"""
+    <head>
+        <link rel="apple-touch-icon" href="https://senin-logonun-linki.com/logo.png">
+        <link rel="icon" href="https://senin-logonun-linki.com/logo.png">
+        
+        <meta name="apple-mobile-web-app-title" content="FetihAI">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+    </head>
+    """, unsafe_allow_html=True)
+
 # 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
 if "messages" not in st.session_state:
     st.session_state.messages = []
