@@ -1,32 +1,29 @@
 import streamlit as st
-from groq import Groq
 import google.generativeai as genai
 from PIL import Image
 import time
-from streamlit_mic_recorder import mic_recorder, speech_to_text
+from streamlit_mic_recorder import speech_to_text
 
+# Sadece BİR TANE sayfa ayarı olur, o da en başta!
 st.set_page_config(
-    page_title="FetihAI", # Ana ekrana eklerken çıkacak varsayılan isim
-    page_icon="icon-512.png", # Klasöründeki logonun adı (veya bir URL)
+    page_title="Fatih1453 - v0.3", 
+    page_icon="🇹🇷⚔️", 
     layout="wide"
 )
 
-# 1. HAFIZA AYARLARI (Her şeyden önce gelmeli!)
+# 1. HAFIZA AYARLARI
 if "messages" not in st.session_state:
     st.session_state.messages = []
 if "arsiv" not in st.session_state:
     st.session_state.arsiv = {}
 
-# 2. API BAĞLANTILARI
+# 2. API BAĞLANTILARI (Groq çöpe atıldı, sadece Gemini var - Günde 1500 mesaj bedava!)
 try:
-    client = Groq(api_key=st.secrets["GROQ_API_KEY"])
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
 except Exception as e:
     st.error("API Anahtarlarında sıkıntı var reis!")
 
-st.set_page_config(page_title="Fatih1453 - v0.3", page_icon="🇹🇷⚔️", layout="wide")
-
-# --- FATİH KİŞİLİĞİ (Sarı hatayı önlemek için en tepede) ---
+# --- FATİH KİŞİLİĞİ ---
 FATIH_PROMPT = """
 Sen samimi, esprili Fatih1453'sün. Senin yapımcın Muhammed Fatih Uğurlu'dur. 
 Kullanıcı kendisinin Muhammed Fatih Uğurlu olduğunu söylerse ona 'abim' diye hitap et, ona saygı duy. 
@@ -55,7 +52,6 @@ with st.sidebar:
     st.divider()
     st.subheader("Eski Kayıtlar")
     
-    # Arşivi listeleme ve geri yükleme
     for isim in list(st.session_state.arsiv.keys()):
         c1, c2 = st.columns([4, 1])
         if c1.button(isim, key=f"load_{isim}", use_container_width=True):
@@ -69,30 +65,23 @@ with st.sidebar:
 st.title("🇹🇷⚔️ Fatih1453 - v0.3")
 st.caption("Muhammed Fatih Uğurlu'nun Özel Yapay Zeka Asistanı")
 
-# Şık Fotoğraf Yükleme (Popover)
 with st.expander("📸 Fotoğraf Gönder", expanded=False):
     uploaded_file = st.file_uploader("Bir resim seçin...", type=["jpg", "jpeg", "png"])
     if uploaded_file:
-        # width=300 yaparsan resim daha derli toplu durur
-        st.image(uploaded_file, caption="Yüklendi!", width=150,)
+        st.image(uploaded_file, caption="Yüklendi!", width=150)
 
 # Mesajları Ekrana Yazdır
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# --- 5. CHAT MANTIĞI (SADECE BURAYI KONTROL ET, ESKİ CHAT_INPUT'LARI SİL) ---
-
+# --- 5. CHAT MANTIĞI ---
 if "resim_bakildi" not in st.session_state:
     st.session_state.resim_bakildi = False
 
-# Sesli giriş (Buton olarak görünür)
+# Ses ve Klavye Girişi
 voice_prompt = speech_to_text(language='tr', start_prompt="🎤 Konuş", stop_prompt="🛑 Durdur", key='speech_input_unique')
-
-# Klavye girişi (SAYFADA SADECE BİR TANE OLMALI!)
 chat_prompt = st.chat_input("Fatih1453'e yaz...")
-
-# Ses varsa sesi, yoksa klavyeyi kullan
 prompt = voice_prompt if voice_prompt else chat_prompt
 
 if prompt:
@@ -105,6 +94,7 @@ if prompt:
         placeholder = st.empty()
 
         try:
+            # EĞER RESİM VARSA
             if uploaded_file and not st.session_state.resim_bakildi:
                 vision_model = genai.GenerativeModel('gemini-1.5-flash')
                 img = Image.open(uploaded_file)
@@ -113,15 +103,30 @@ if prompt:
                 placeholder.markdown(full_response)
                 st.session_state.resim_bakildi = True
             
+            # EĞER SADECE YAZIYSA (GROQ YERİNE GEMİNİ ÇALIŞIYOR)
             else:
-                # Groq üzerindeki güncel ve aktif model
-                completion = client.chat.completions.create(
-                    model="deepseek-r1-distill-qwen-32b", 
-                    messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
-                    stream=True
-                )
+                model = genai.GenerativeModel('gemini-1.5-flash')
                 
+                # Gemini için konuşma geçmişini (hafızayı) hazırlıyoruz
+                gemini_history = []
+                for msg in st.session_state.messages[:-1]: # Son mesaj hariç hepsini yükle
+                    role = "user" if msg["role"] == "user" else "model"
+                    gemini_history.append({"role": role, "parts": [msg["content"]]})
+                    
+                chat_session = model.start_chat(history=gemini_history)
+                
+                # Fatih Kişiliğini soruya görünmez şekilde ekliyoruz
+                gizli_prompt = f"SİSTEM NOTU: {FATIH_PROMPT}\n\nKULLANICI SORUSU: {prompt}"
+                
+                # Cevabı akıcı (stream) şeklinde alıyoruz
+                response = chat_session.send_message(gizli_prompt, stream=True)
+                
+                for chunk in response:
+                    if chunk.text:
+                        full_response += chunk.text
+                        placeholder.markdown(full_response + "▌")
+                placeholder.markdown(full_response)
+
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
             st.error(f"Hata: {e}")
-            
