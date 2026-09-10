@@ -114,18 +114,12 @@ if prompt:
                 st.session_state.resim_bakildi = True
             
             else:
-                # 🚀 DEEPSEEK-R1 MOTORU AYAĞA KALKIYOR
+                # Groq üzerindeki güncel ve aktif model
                 completion = client.chat.completions.create(
-                    model="deepseek-r1-distill-llama-70b", # Taş gibi DeepSeek modeli
+                    model="deepseek-r1-distill-qwen-32b", 
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
                     stream=True
                 )
-                for chunk in completion:
-                    content = chunk.choices[0].delta.content
-                    if content:
-                        full_response += content
-                        placeholder.markdown(full_response + "▌")
-                placeholder.markdown(full_response)
                 
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
