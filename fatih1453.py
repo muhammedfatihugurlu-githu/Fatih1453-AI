@@ -96,7 +96,7 @@ if prompt:
         try:
             # EĞER RESİM VARSA
             if uploaded_file and not st.session_state.resim_bakildi:
-                vision_model = genai.GenerativeModel('gemini-1.5-flash')
+                vision_model = genai.GenerativeModel('gemini-2.5-flash')
                 img = Image.open(uploaded_file)
                 response = vision_model.generate_content([FATIH_PROMPT + "\nSoru: " + prompt, img])
                 full_response = response.text
@@ -105,7 +105,7 @@ if prompt:
             
             # EĞER SADECE YAZIYSA (GROQ YERİNE GEMİNİ ÇALIŞIYOR)
             else:
-                model = genai.GenerativeModel('gemini-1.5-flash')
+                model = genai.GenerativeModel('gemini-2.5-flash')
                 
                 # Gemini için konuşma geçmişini (hafızayı) hazırlıyoruz
                 gemini_history = []
