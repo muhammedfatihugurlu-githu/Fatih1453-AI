@@ -115,7 +115,7 @@ if prompt:
             
             else:
                 completion = client.chat.completions.create(
-                    model="llama-3-70b-8192",
+                    model="llama-3.3-70b-specdec",
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
                     stream=True
                 )
