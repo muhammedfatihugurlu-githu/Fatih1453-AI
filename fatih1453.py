@@ -114,8 +114,9 @@ if prompt:
                 st.session_state.resim_bakildi = True
             
             else:
+                # 🚀 DEEPSEEK-R1 MOTORU AYAĞA KALKIYOR
                 completion = client.chat.completions.create(
-                    model="llama-3.3-70b-specdec",
+                    model="deepseek-r1-distill-llama-70b", # Taş gibi DeepSeek modeli
                     messages=[{"role": "system", "content": FATIH_PROMPT}] + st.session_state.messages,
                     stream=True
                 )
@@ -125,7 +126,7 @@ if prompt:
                         full_response += content
                         placeholder.markdown(full_response + "▌")
                 placeholder.markdown(full_response)
-
+                
             st.session_state.messages.append({"role": "assistant", "content": full_response})
         except Exception as e:
             st.error(f"Hata: {e}")
